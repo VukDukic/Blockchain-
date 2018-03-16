@@ -71,6 +71,7 @@ static mineBlock(lastBlock, data) {
 }
 
 Now test the new `mineBlock` function. In dev-test.js, delete all of the lines except for the first line that requires the `Block` class.
+
 ```
 const fooBlock = Block.mineBlock(Block.genesis(), 'foo');
 console.log(fooBlock.toString());
@@ -81,11 +82,13 @@ Install the `crypto-js` module which has the SHA256 (Secure Hashing Algorithm 25
 $ npm i crypto-js --save
 
 In block.js, require the sha256 from the `crypto-js` module at the top:
-```
+
+```javascript
 const SHA256 = require('crypto-js/sha256');
 ```
 
 Then add a new static hash function to the Block class:
+
 ```
 static hash(timestamp, lastHash, data) {
 	return SHA256(`${timestamp}${lastHash}${data}`).toString();
@@ -93,9 +96,32 @@ static hash(timestamp, lastHash, data) {
 ```
 
 Now replace the ‘todo-hash’ stub in the `mineBlock` function:
+
 ```
 const hash = Block.hash(timestamp, lastHash, data);
 ```
 
 Check the command line - `npm run dev-test` should still be running. Notice the generated hash of the block.
+
+Create the `Blockchain` that creates a chain based on the `Block` class:
+Create blockchain.js
+
+blockchain.js:
+```
+const Block = require('./block');
+
+class Blockchain {
+  constructor() {
+    this.chain = [Block.genesis()];
+  }
+
+  addBlock(data) {
+    const block = Block.mineBlock(this.chain[this.chain.length-1], data);
+    this.chain.push(block);
+    return block;
+  }
+}
+
+module.exports = Blockchain;
+```
 
