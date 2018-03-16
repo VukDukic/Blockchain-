@@ -44,3 +44,58 @@ In `package.json`, find the scripts section and add:
 Then in the command line, run:
 * $ npm run dev-test
 
+#### Every blockchain starts with the “genesis block” - a default dummy block to originate the chain.
+
+Add a static genesis function to the `Block` class in `block.js`;
+```
+static genesis() {
+	return new this('Genesis time', '-----', 'f1r57-h45h', []);
+}
+```
+
+Back in dev-test.js, test out the new genesis block:
+```
+console.log(Block.genesis().toString());
+```
+$ npm run dev-test
+
+Add a function to add a generate a block based off of some provided `data` to store, and a given `lastBlock.` Call the function `mineBlock`. Generating a block is equated to an act of mining since it takes computational power to “mine” the block. Later on, we’ll make the demand for spending computational power more explicit.
+
+#### Add the `static mineBlock()` function to the `Block` class:
+```
+static mineBlock(lastBlock, data) {
+	const timestamp = Date.now();
+	const lastHash = lastBlock.hash;
+  const hash = ‘todo-hash’;
+  return new this(timestamp, lastHash, hash, data);
+}
+
+Now test the new `mineBlock` function. In dev-test.js, delete all of the lines except for the first line that requires the `Block` class.
+```
+const fooBlock = Block.mineBlock(Block.genesis(), 'foo');
+console.log(fooBlock.toString());
+```
+#### A hashing function generates a unique value for the combination of data attributes in the block. The hash for a new block is based on its own timestamp, the data it stores, and the hash of the block that came before it.
+
+Install the `crypto-js` module which has the SHA256 (Secure Hashing Algorithm 256-bit) function:
+$ npm i crypto-js --save
+
+In block.js, require the sha256 from the `crypto-js` module at the top:
+```
+const SHA256 = require('crypto-js/sha256');
+```
+
+Then add a new static hash function to the Block class:
+```
+static hash(timestamp, lastHash, data) {
+	return SHA256(`${timestamp}${lastHash}${data}`).toString();
+}
+```
+
+Now replace the ‘todo-hash’ stub in the `mineBlock` function:
+```
+const hash = Block.hash(timestamp, lastHash, data);
+```
+
+Check the command line - `npm run dev-test` should still be running. Notice the generated hash of the block.
+
