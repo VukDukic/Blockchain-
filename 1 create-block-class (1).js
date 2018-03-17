@@ -32,4 +32,3 @@ In `package.json`, find the scripts section and add:
 ````
 Then in the command line, run:
 $ npm run dev-test
-
