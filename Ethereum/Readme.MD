@@ -1,0 +1,1 @@
+* https://ethereum.org/token
